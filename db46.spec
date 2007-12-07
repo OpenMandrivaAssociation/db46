@@ -307,7 +307,7 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 %ifarch ppc
 	--disable-posixmutexes --with-mutex=PPC/gcc-assembly
 %endif
-%ifarch sparc
+%ifarch %{sunsparc}
 	--disable-posixmutexes --with-mutex=Sparc/gcc-assembly
 %endif
 %else
