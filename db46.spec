@@ -28,7 +28,7 @@
 %{?_without_java: %global build_java 0}
 
 # Define to build a stripped down version to use for nss libraries
-%define build_nss	0
+%define build_nss	1
 
 # Allow --with[out] nss rpm command line build
 %{?_with_nss: %{expand: %%define build_nss 1}}
@@ -189,7 +189,6 @@ use Berkeley DB.
 %package -n %{libdbnss}
 Summary: The Berkeley DB database library for NSS modules
 Group: System/Libraries
-Requires(pre): /sbin/ldconfig
 
 %description -n %{libdbnss}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -205,6 +204,10 @@ that use Berkeley DB.
 Summary: Development libraries/header files for building nss modules with Berkeley DB
 Group: Development/Databases
 Requires: %{libdbnss} = %{version}-%{release}
+Provides: libdbnss-devel = %{version}-%{release}
+Provides: %{_lib}dbnss-devel = %{version}-%{release}
+Provides: db_nss-devel = %{version}-%{release}
+Provides: libdb_nss-devel = %{version}-%{release}
 
 %description -n %{libdbnssdev}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -322,11 +325,28 @@ pushd build_nss
 CONFIGURE_TOP="../dist" %configure2_5x \
 	--enable-shared --disable-static \
 	--disable-tcl --disable-cxx --disable-java \
-	--disable-pthreadsmutexes \
-	--with-uniquename \
+	--with-uniquename=_nss \
 	--enable-compat185 \
 	--disable-cryptography --disable-queue \
-        --disable-replication --disable-verify
+        --disable-replication --disable-verify \
+%ifarch %{ix86}
+	--disable-posixmutexes --with-mutex=x86/gcc-assembly
+%endif
+%ifarch x86_64
+	--disable-posixmutexes --with-mutex=x86_64/gcc-assembly
+%endif
+%ifarch alpha
+	--disable-posixmutexes --with-mutex=ALPHA/gcc-assembly
+%endif
+%ifarch ia64
+	--disable-posixmutexes --with-mutex=ia64/gcc-assembly
+%endif
+%ifarch ppc
+	--disable-posixmutexes --with-mutex=PPC/gcc-assembly
+%endif
+%ifarch %{sunsparc}
+	--disable-posixmutexes --with-mutex=Sparc/gcc-assembly
+%endif
 
 %make libdb_base=libdb_nss libso_target=libdb_nss-%{__soversion}.la libdir=/%{_lib}
 popd
