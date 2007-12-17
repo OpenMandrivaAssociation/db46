@@ -66,7 +66,6 @@ BuildRequires:	gcc-java
 BuildRequires:	java-1.4.2-gcj-compat
 BuildRequires:	java-1.4.2-gcj-compat-devel
 %endif
-BuildRoot:	%{_tmppath}/%{name}-root
 
 %description
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
