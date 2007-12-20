@@ -21,7 +21,7 @@
 %{?!mdkversion:%define mdkversion	%(perl -pe '/(\\d+)\\.(\\d)\\.?(\\d)?/; $_="$1$2".($3||0)' /etc/mandriva-release)}
 
 # Define to build Java bindings (does not work)
-%global build_java	1
+%global build_java	0
 
 # Allow --with[out] JAVA rpm command line build
 %{?_with_java: %global build_java 1}
