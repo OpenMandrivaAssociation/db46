@@ -12,7 +12,7 @@
 
 %define libdbcxx	%{libname_orig}cxx%{__soversion}
 %define libdbtcl	%{libname_orig}tcl%{__soversion}
-%define libdbjava	%{libname_orig}java%{__soversion}
+%define libdbjava	db%{__soversion}
 
 %define libdbnss	%{libname_orig}nss%{__soversion}
 %define libdbnssdev	%{libdbnss}-devel
@@ -20,12 +20,8 @@
 # Define Mandriva Linux version we are building for
 %{?!mdkversion:%define mdkversion	%(perl -pe '/(\\d+)\\.(\\d)\\.?(\\d)?/; $_="$1$2".($3||0)' /etc/mandriva-release)}
 
-# Define to build Java bindings (does not work)
-%global build_java	0
-
-# Allow --with[out] JAVA rpm command line build
-%{?_with_java: %global build_java 1}
-%{?_without_java: %global build_java 0}
+%bcond_without java
+%define gcj_support 1
 
 # Define to build a stripped down version to use for nss libraries
 %define build_nss	1
@@ -50,7 +46,7 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 3
+Release:	%mkrel 4
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
@@ -61,12 +57,14 @@ URL:		http://www.oracle.com/technology/software/products/berkeley-db/
 License:	BSD
 Group:		System/Libraries
 BuildRequires:	%{!?_without_tcl:tcl-devel} %{!?_without_db1:db1-devel} ed libtool
-%if %{build_java}
-BuildRequires:	gcc-java
-BuildRequires:	java-1.4.2-gcj-compat
-BuildRequires:	java-1.4.2-gcj-compat-devel
+%if %with java
+BuildRequires:  java-rpmbuild
+BuildRequires:  sharutils
+%if %{gcj_support}
+BuildRequires: java-gcj-compat-devel
 %endif
-BuildRoot:	%{_tmppath}/%{name}-root
+%endif
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -97,6 +95,7 @@ should be installed on all systems.
 This package contains the files needed to build C++ programs which use
 Berkeley DB.
 
+%if %with java
 %package -n %{libdbjava}
 Summary: The Berkeley DB database library for C++
 Group: System/Libraries
@@ -109,6 +108,14 @@ should be installed on all systems.
 
 This package contains the files needed to build Java programs which use
 Berkeley DB.
+
+%package -n %{libdbjava}-javadoc
+Summary:        Javadoc for %{name}
+Group:          Development/Java
+
+%description -n %{libdbjava}-javadoc
+Javadoc for %{name}.
+%endif
 
 %if %{!?_without_tcl:1}%{?_without_tcl:0}
 %package -n %{libdbtcl}
@@ -227,6 +234,7 @@ modules which use Berkeley DB.
 
 %prep
 %setup -q -n db-%{version}
+%{__rm} -r docs/java
 %patch0 -p1 -b .db185
 
 # fedora patches
@@ -285,8 +293,13 @@ CFLAGS="$CFLAGS -D_GNU_SOURCE -D_REENTRANT"
 %endif
 export CFLAGS
 
-%if %{build_java}
-ENABLE_JAVA="--enable-java"
+%if %with java
+export CLASSPATH=
+export JAVAC=%{javac}
+export JAR=%{jar}
+export JAVA=%{java}
+export JAVACFLAGS="-nowarn"
+JAVA_MAKE="JAR=%{jar} JAVAC=%{javac} JAVACFLAGS="-nowarn" JAVA=%{java}"
 %endif
 
 pushd build_unix
@@ -298,7 +311,10 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 %if %{?!_without_tcl:1}%{?_without_tcl:0}
 	--enable-tcl --with-tcl=%{_libdir} --enable-test \
 %endif
-	--enable-cxx $ENABLE_JAVA \
+	--enable-cxx \
+%if %with java
+        --enable-java \
+%endif
 %if %{build_asmmutex}
 %ifarch %{ix86}
 	--disable-posixmutexes --with-mutex=x86/gcc-assembly
@@ -322,7 +338,10 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 	--with-mutex=POSIX/pthreads/library
 %endif
 
-%make
+%make $JAVA_MAKE
+pushd ../java
+%{javadoc} -d ../docs/java `%{_bindir}/find . -name '*.java'`
+popd
 popd
 %if %{build_nss}
 mkdir build_nss
@@ -383,9 +402,18 @@ done
 %endif
 
 # Move db.jar file to the correct place, and version it
-%if %{build_java}
-mkdir -p %{buildroot}%{_datadir}/java
-mv %{buildroot}%{_libdir}/db.jar %{buildroot}%{_datadir}/java/db-%{__soversion}.jar
+%if %with java
+mkdir -p %{buildroot}%{_jnidir}
+mv %{buildroot}%{_libdir}/db.jar %{buildroot}%{_jnidir}/db%{__soversion}-%{version}.jar
+(cd %{buildroot}%{_jnidir} && for jar in *-%{version}*; do %{__ln_s} ${jar} ${jar/-%{version}/}; done)
+
+%{__mkdir_p} %{buildroot}%{_javadocdir}/db%{__soversion}-%{version}
+%{__cp} -a docs/java/* %{buildroot}%{_javadocdir}/db%{__soversion}-%{version}
+%{__ln_s} db%{__soversion}-%{version} %{buildroot}%{_javadocdir}/db%{__soversion}
+
+%if %{gcj_support}
+%{_bindir}/aot-compile-rpm
+%endif
 %endif
 
 #symlink the short libdb???.a name
@@ -395,7 +423,7 @@ ln -sf libdb_tcl-%{__soversion}.a %{buildroot}%{_libdir}/libdb_tcl.a
 ln -sf %{_libdb_a} %{buildroot}%{_libdir}/libdb-4.a
 ln -sf %{_libcxx_a} %{buildroot}%{_libdir}/libdb_cxx-4.a
 ln -sf libdb_tcl-%{__soversion}.a %{buildroot}%{_libdir}/libdb_tcl-4.a
-%if %{build_java}
+%if %with java
 ln -sf libdb_java-%{__soversion}.a %{buildroot}%{_libdir}/libdb_java.a
 ln -sf libdb_java-%{__soversion}.a %{buildroot}%{_libdir}/libdb_java-4.a
 %endif
@@ -409,9 +437,12 @@ rm -rf %{buildroot}
 %post -n %{libdbcxx} -p /sbin/ldconfig
 %postun -n %{libdbcxx} -p /sbin/ldconfig
 
-%if %{build_java}
-%post -n %{libdbjava} -p /sbin/ldconfig
-%postun -n %{libdbjava} -p /sbin/ldconfig
+%if %with java
+%post -n %{libdbjava}
+%{update_gcjdb}
+
+%postun -n %{libdbjava}
+%{clean_gcjdb}
 %endif
 
 %if %{?!_without_tcl:1}%{?_without_tcl:0} 
@@ -433,14 +464,24 @@ rm -rf %{buildroot}
 %defattr(755,root,root) 
 %{_libdir}/libdb_cxx-%{__soversion}.so
 
-%if %{build_java}
+%if %with java
 %files -n %{libdbjava}
-%defattr(644,root,root,755) 
+%defattr(644,root,root,755)
 %doc docs/java
 %doc examples_java
 %attr(755,root,root) %{_libdir}/libdb_java-%{__soversion}.so
 %attr(755,root,root) %{_libdir}/libdb_java-%{__soversion}_g.so
-%{_datadir}/java/db-%{__soversion}.jar
+%{_jnidir}/db%{__soversion}.jar
+%{_jnidir}/db%{__soversion}-%{version}.jar
+%if %{gcj_support}
+%dir %{_libdir}/gcj/%{name}
+%{_libdir}/gcj/%{name}/*
+%endif
+
+%files -n %{libdbjava}-javadoc
+%defattr(0644,root,root,0755)
+%doc %{_javadocdir}/db%{__soversion}-%{version}
+%doc %dir %{_javadocdir}/db%{__soversion}
 %endif
 
 %if %{?!_without_tcl:1}%{?_without_tcl:0} 
@@ -489,7 +530,7 @@ rm -rf %{buildroot}
 %{_libdir}/libdb_tcl-4.so
 %{_libdir}/libdb_tcl-%{__soversion}.la
 %endif
-%if %build_java
+%if %with java
 %{_libdir}/libdb_java.so
 %{_libdir}/libdb_java-4.so
 %{_libdir}/libdb_java-%{__soversion}.la
