@@ -31,7 +31,7 @@
 %{?_without_nss: %{expand: %%define build_nss 0}}
 
 # Define to rename utilities and allow parallel installation
-%define build_parallel	1
+%define build_parallel	0
 
 # Allow --with[out] parallel rpm command line build
 %{?_with_parallel: %{expand: %%define build_parallel 1}}
@@ -46,7 +46,7 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 4
+Release:	%mkrel 5
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
@@ -234,7 +234,12 @@ modules which use Berkeley DB.
 %endif
 
 %prep
+
 %setup -q -n db-%{version}
+
+# fix strange attribs
+find . -type f -perm 0444 -exec chmod 644 {} \;
+
 %{__rm} -r docs/java
 %patch0 -p1 -b .db185
 
@@ -379,6 +384,7 @@ popd
 
 %install
 rm -rf %{buildroot}
+
 make -C build_unix install_setup install_include install_lib install_utilities \
 	DESTDIR=%{buildroot} includedir=%{_includedir}/db4 \
 	emode=755
