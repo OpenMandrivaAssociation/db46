@@ -55,7 +55,7 @@ Patch100:	db-4.6.18-glibc.patch
 Patch101:	db-4.5.20-jni-include-dir.patch
 #Upstream patches
 #Patch200:	http://www.oracle.com/technology/products/berkeley-db/xml/update/4.6.21/patch.4.6.21.1
-Patch200:	patch.4.6.21.1
+Patch200:	db46-update-4.6.21.1.diff
 URL:		http://www.oracle.com/technology/software/products/berkeley-db/
 License:	BSD
 Group:		System/Libraries
