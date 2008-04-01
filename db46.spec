@@ -46,13 +46,15 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 5
+Release:	%mkrel 6
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
 # fedora patches
 Patch100:	db-4.6.18-glibc.patch
 Patch101:	db-4.5.20-jni-include-dir.patch
+#Upstream patches
+Patch200:	http://www.oracle.com/technology/products/berkeley-db/xml/update/4.6.21/patch.4.6.21.1
 URL:		http://www.oracle.com/technology/software/products/berkeley-db/
 License:	BSD
 Group:		System/Libraries
@@ -246,6 +248,9 @@ find . -type f -perm 0444 -exec chmod 644 {} \;
 # fedora patches
 %patch100 -p1 -b .glibc
 %patch101 -p1 -b .4.5.20.jni
+
+# upstream patches
+%patch200 -p0 
 
 pushd dist
 libtoolize --copy --force
