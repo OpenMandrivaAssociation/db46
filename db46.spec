@@ -46,7 +46,7 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 6
+Release:	%mkrel 7
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
@@ -67,7 +67,7 @@ BuildRequires:  sharutils
 BuildRequires: java-gcj-compat-devel
 %endif
 %endif
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -119,7 +119,7 @@ Group:          Development/Java
 %description -n %{libdbjava}-javadoc
 Javadoc for %{name}.
 %endif
-BuildRoot:	%{_tmppath}/%{name}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %if %{!?_without_tcl:1}%{?_without_tcl:0}
 %package -n %{libdbtcl}
