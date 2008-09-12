@@ -46,7 +46,7 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 8
+Release:	%mkrel 9
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
@@ -224,6 +224,7 @@ Provides: libdbnss-devel = %{version}-%{release}
 Provides: %{_lib}dbnss-devel = %{version}-%{release}
 Provides: db_nss-devel = %{version}-%{release}
 Provides: libdb_nss-devel = %{version}-%{release}
+Conflicts: %{libname_orig}nss4.2-devel
 
 %description -n %{libdbnssdev}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
