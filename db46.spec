@@ -46,7 +46,7 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 19
+Release:	%mkrel 20
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
