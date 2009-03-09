@@ -46,7 +46,7 @@
 Summary:	The Berkeley DB database library for C
 Name:		db46
 Version:	4.6.21
-Release:	%mkrel 21
+Release:	%mkrel 22
 Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
@@ -415,7 +415,8 @@ mv %{buildroot}/%{_libdir}/libdb_nss-%{__soversion}.so %{buildroot}/%{_lib}
 ln -s  /%{_lib}/libdb_nss-%{__soversion}.so %{buildroot}%{_libdir}
 %endif
 
-ln -sf db4/db.h %{buildroot}%{_includedir}/db.h
+ln -sf db4/db.h %{buildroot}%{_includedir}
+ln -sf db4/db_cxx.h %{buildroot}%{_includedir}
 
 # XXX This is needed for parallel install with db4.2
 %if %{build_parallel}
@@ -558,6 +559,7 @@ rm -rf %{buildroot}
 %endif
 %{_includedir}/db4/db_cxx.h
 %{_includedir}/db.h
+%{_includedir}/db_cxx.h
 %{_libdir}/libdb.so
 %{_libdir}/libdb-4.so
 %{_libdir}/libdb-%{__soversion}.la
