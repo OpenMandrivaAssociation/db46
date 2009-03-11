@@ -51,6 +51,7 @@ Source:		http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
 # statically link db1 library
 Patch0:		db-4.2.52-db185.patch
 Patch1:	    db-4.6.21-fix-format-errors.patch
+Patch2:	    db-4.6.21-fix-linking.patch
 # fedora patches
 Patch100:	db-4.6.18-glibc.patch
 Patch101:	db-4.6.21-jni.patch
@@ -244,7 +245,6 @@ modules which use Berkeley DB.
 %endif
 
 %prep
-
 %setup -q -n db-%{version}
 
 # fix strange attribs
@@ -253,6 +253,7 @@ find . -type f -perm 0444 -exec chmod 644 {} \;
 %{__rm} -r docs/java
 %patch0 -p1 -b .db185
 %patch1 -p1 -b .format-errors
+%patch2 -p1 -b .linking
 
 # fedora patches
 %patch100 -p1 -b .glibc
@@ -262,11 +263,6 @@ find . -type f -perm 0444 -exec chmod 644 {} \;
 %patch200 -p0 
 %patch201 -p0 
 %patch202 -p0 
-
-pushd dist
-libtoolize --copy --force
-cat %{_datadir}/aclocal/libtool.m4 >> aclocal.m4
-popd
 
 # Remove tags files which we don't need.
 find . -name tags | xargs rm -f
@@ -306,6 +302,9 @@ fixup_href `find . -name "*.html"`
 set -x	# XXX painful to watch
 
 cd dist
+libtoolize --copy --force
+cp %{_datadir}/aclocal/libtool.m4 aclocal
+cp %{_datadir}/aclocal/lt*.m4 aclocal
 ./s_config
 
 %build
