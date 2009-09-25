@@ -20,7 +20,7 @@
 # Define Mandriva Linux version we are building for
 %{?!mdkversion:%define mdkversion	%(perl -pe '/(\\d+)\\.(\\d)\\.?(\\d)?/; $_="$1$2".($3||0)' /etc/mandriva-release)}
 
-%ifnarch %mips
+%ifnarch %mips %arm
 %bcond_without java
 %define gcj_support 1
 %endif
@@ -360,6 +360,9 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 %ifarch %mips
 	--disable-posixmutexes --with-mutex=MIPS/gcc-assembly
 %endif
+%ifarch %arm
+	--disable-posixmutexes --with-mutex=ARM/gcc-assembly
+%endif
 %else
 	--with-mutex=POSIX/pthreads/library
 %endif
@@ -401,6 +404,9 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 %endif
 %ifarch %mips
 	--disable-posixmutexes --with-mutex=MIPS/gcc-assembly
+%endif
+%ifarch %arm
+	--disable-posixmutexes --with-mutex=ARM/gcc-assembly
 %endif
 
 %make libdb_base=libdb_nss libso_target=libdb_nss-%{__soversion}.la libdir=/%{_lib}
