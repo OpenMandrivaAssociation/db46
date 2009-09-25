@@ -148,7 +148,6 @@ Group: Databases
 %if !%{build_parallel}
 Conflicts: db3-utils
 %endif
-Provides: db4-utils = %{version}-%{release}
 
 %description utils
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -172,8 +171,6 @@ Conflicts: %{libname_orig}4.1-devel %{libname_orig}4.2-devel
 Conflicts: %{libname_orig}4.3-devel %{libname_orig}4.4-devel
 Conflicts: %{libname_orig}4.5-devel
 Conflicts: %{libname_orig}4.7-devel
-Provides: db-devel = %{version}-%{release}
-Provides: db4-devel = %{version}-%{release}
 
 %description -n %{libnamedev}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
@@ -196,8 +193,6 @@ Conflicts: %{libname_orig}4.1-static-devel %{libname_orig}4.2-static-devel
 Conflicts: %{libname_orig}4.3-static-devel %{libname_orig}4.4-static-devel
 Conflicts: %{libname_orig}4.5-static-devel
 Conflicts: %{libname_orig}4.7-static-devel
-Provides: db-static-devel = %{version}-%{release}
-Provides: db4-static-devel = %{version}-%{release}
 
 %description -n %{libnamestatic}
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
