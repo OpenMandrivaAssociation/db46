@@ -20,8 +20,10 @@
 # Define Mandriva Linux version we are building for
 %{?!mdkversion:%define mdkversion	%(perl -pe '/(\\d+)\\.(\\d)\\.?(\\d)?/; $_="$1$2".($3||0)' /etc/mandriva-release)}
 
+%ifnarch %mips
 %bcond_without java
 %define gcj_support 1
+%endif
 
 # Define to build a stripped down version to use for nss libraries
 %define build_nss	1
@@ -355,14 +357,19 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 %ifarch %{sunsparc}
 	--disable-posixmutexes --with-mutex=Sparc/gcc-assembly
 %endif
+%ifarch %mips
+	--disable-posixmutexes --with-mutex=MIPS/gcc-assembly
+%endif
 %else
 	--with-mutex=POSIX/pthreads/library
 %endif
 
 %make $JAVA_MAKE
+%if %with java
 pushd ../java
 %{javadoc} -d ../docs/java `%{_bindir}/find . -name '*.java'`
 popd
+%endif
 popd
 %if %{build_nss}
 mkdir build_nss
@@ -391,6 +398,9 @@ CONFIGURE_TOP="../dist" %configure2_5x \
 %endif
 %ifarch %{sunsparc}
 	--disable-posixmutexes --with-mutex=Sparc/gcc-assembly
+%endif
+%ifarch %mips
+	--disable-posixmutexes --with-mutex=MIPS/gcc-assembly
 %endif
 
 %make libdb_base=libdb_nss libso_target=libdb_nss-%{__soversion}.la libdir=/%{_lib}
