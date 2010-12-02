@@ -462,6 +462,8 @@ ln -sf libdb_java-%{__soversion}.a %{buildroot}%{_libdir}/libdb_java.a
 ln -sf libdb_java-%{__soversion}.a %{buildroot}%{_libdir}/libdb_java-4.a
 %endif
 
+rm -f %{buildroot}%{_includedir}/db_nss/db_cxx.h
+
 %clean
 rm -rf %{buildroot}
 
@@ -603,7 +605,6 @@ rm -rf %{buildroot}
 %if %{?!_without_db1:1}%{?_without_db1:0} 
 %{_includedir}/db_nss/db_185.h
 %endif
-%exclude %{_includedir}/db_nss/db_cxx.h
 %{_libdir}/libdb_nss.so
 %{_libdir}/libdb_nss-4.so
 %{_libdir}/libdb_nss-%{__soversion}.la
