@@ -1,0 +1,23 @@
+diff -Naur --exclude '*~' db-4.6.21/dist/aclocal/tcl.m4 db-4.6.21-fix-linking/dist/aclocal/tcl.m4
+--- db-4.6.21/dist/aclocal/tcl.m4	2005-06-28 22:45:25.000000000 +0200
++++ db-4.6.21-fix-linking/dist/aclocal/tcl.m4	2009-03-11 22:39:02.000000000 +0100
+@@ -115,6 +115,7 @@
+ 	esac
+ 	AC_SUBST(TCL_BIN_DIR)
+ 	AC_SUBST(TCL_INCLUDE_SPEC)
++	AC_SUBST(TCL_LIB_SPEC)
+ 	AC_SUBST(TCL_LIB_FILE)
+ 	AC_SUBST(TCL_SRC_DIR)
+ 
+diff -Naur --exclude '*~' db-4.6.21/dist/Makefile.in db-4.6.21-fix-linking/dist/Makefile.in
+--- db-4.6.21/dist/Makefile.in	2007-07-05 20:35:02.000000000 +0200
++++ db-4.6.21-fix-linking/dist/Makefile.in	2009-03-11 22:38:47.000000000 +0100
+@@ -121,7 +121,7 @@
+ # Tcl support is optional and requires shared libraries.
+ ##################################################
+ TCL_INCLUDE_SPEC=	@TCL_INCLUDE_SPEC@
+-LIBTSO_LIBS=	@LIBTSO_LIBS@ @LIBSO_LIBS@
++LIBTSO_LIBS=	@TCL_LIB_SPEC@ @LIBSO_LIBS@
+ libtso_base=	libdb_tcl
+ libtso=		$(libtso_base)-$(LIBVERSION)@MODSUFFIX@
+ libtso_static=	$(libtso_base)-$(LIBVERSION).a

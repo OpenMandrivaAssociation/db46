@@ -1,0 +1,12 @@
+diff -Naur --exclude '*.orig' db-4.6.21/dist/configure.ac db-4.6.21-jni/dist/configure.ac
+--- db-4.6.21/dist/configure.ac	2007-05-08 23:16:46.000000000 +0200
++++ db-4.6.21-jni/dist/configure.ac	2009-01-24 12:07:01.000000000 +0100
+@@ -416,7 +416,7 @@
+ 	AC_PROG_JAVAC
+ 	AC_PROG_JAR
+ 	AC_PROG_JAVA
+-	AC_JNI_INCLUDE_DIR
++	JNI_INCLUDE_DIRS="/usr/lib/jvm/java-1.5.0-gcj/include"
+ 
+ 	AC_MSG_CHECKING(java version)
+         case "$JAVA" in
