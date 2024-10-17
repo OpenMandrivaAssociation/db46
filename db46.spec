@@ -62,7 +62,7 @@ Patch101:	db-4.6.21-jni.patch
 Patch200:	patch.4.6.21.1
 Patch201:	patch.4.6.21.2
 Patch202:	patch.4.6.21.3
-URL:		http://www.oracle.com/technology/software/products/berkeley-db/
+URL:		https://www.oracle.com/technology/software/products/berkeley-db/
 License:	BSD
 Group:		System/Libraries
 BuildRequires:	%{!?_without_tcl:tcl-devel} %{!?_without_db1:db1-devel} ed libtool
